@@ -119,7 +119,7 @@ public class ViewCommandTest {
 
     private String show2test(){
         return "Show number: 2.\n" +
-                "No bookings have been found for this show\n";
+                "No bookings have been found for this show.\n";
     }
 
     private String show6test(){

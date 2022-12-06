@@ -51,7 +51,7 @@ public class ViewCommand implements Command {
             System.out.printf("Show number: %d.\n", showNumber);
 
             if (show.getBookingList().size() == 0) {
-                System.out.println("No bookings have been found for this show");
+                System.out.println("No bookings have been found for this show.");
             } else {
                 System.out.println("---------------------------------------------------------------------------------------------");
                 System.out.printf("%18s %25s %35s", "Ticket Number", "Buyer Phone Number", "Seat Numbers");
@@ -67,7 +67,7 @@ public class ViewCommand implements Command {
                 System.out.println("---------------------------------------------------------------------------------------------");
             }
         } else {
-            throw new RuntimeException("Show not found");
+            throw new RuntimeException("Show not found.");
         }
     }
 }
