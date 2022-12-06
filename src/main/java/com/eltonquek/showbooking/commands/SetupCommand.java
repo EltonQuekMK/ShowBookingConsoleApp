@@ -42,7 +42,7 @@ public class SetupCommand implements Command {
     @Override
     public void run(String[] inputs) {
         // Ensure that run cannot be used without valid inputs
-        if (!validate(inputs)){
+        if (!validate(inputs)) {
             throw new RuntimeException("Invalid input");
         }
 
@@ -51,7 +51,7 @@ public class SetupCommand implements Command {
         int columns = Integer.parseInt(inputs[3]);
         int cancellationWindow = Integer.parseInt(inputs[4]);
 
-        memory.getShowList().add(new Show(showNumber,rows,columns,cancellationWindow));
+        memory.getShowList().add(new Show(showNumber, rows, columns, cancellationWindow));
         System.out.printf("Show number %d created.\n", showNumber);
     }
 }

@@ -18,7 +18,6 @@ public class SetupCommandTest {
     @Autowired
     private SystemMemory memory;
 
-
     @AfterEach
     void tearDown() {
         memory.getShowList().clear();
