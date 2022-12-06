@@ -14,9 +14,14 @@ class ShowBookingApplicationTests {
     @Autowired
     private List<Command> commandList;
 
+    @Autowired
+    private SystemMemory memory;
+
     @Test
     void contextLoads() {
         Assertions.assertNotNull(commandList);
         Assertions.assertEquals(2, commandList.size());
+        Assertions.assertNotNull(memory);
+        Assertions.assertEquals(0, memory.getShowList().size());
     }
 }

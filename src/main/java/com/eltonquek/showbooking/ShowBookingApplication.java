@@ -47,10 +47,7 @@ public class ShowBookingApplication implements CommandLineRunner {
     }
 
     private static boolean isRunningInTest(String[] args) {
-        if (Objects.equals(args[0], "test")) {
-            return true;
-        }
-        return false;
+        return args != null && args.length == 1 && Objects.equals(args[0], "test");
     }
 
     private static void introduction() {
@@ -69,7 +66,7 @@ public class ShowBookingApplication implements CommandLineRunner {
         if (optionalCommand.isPresent()) {
             optionalCommand.get().run(inputs);
         } else {
-            System.out.println("Command was invalid, please try again.");
+            System.out.println("Command entered was invalid, please try again.");
         }
     }
 }
