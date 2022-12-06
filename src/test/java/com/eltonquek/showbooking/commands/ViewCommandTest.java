@@ -1,8 +1,9 @@
 package com.eltonquek.showbooking.commands;
 
 import com.eltonquek.showbooking.SystemMemory;
+import com.eltonquek.showbooking.entities.Show;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,13 +12,19 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(args = "test")
-public class SetupCommandTest {
+public class ViewCommandTest {
 
     @Autowired
-    private SetupCommand uut;
+    private ViewCommand uut;
 
     @Autowired
     private SystemMemory memory;
+
+    @BeforeEach
+    void setup() {
+        memory.getShowList().add(new Show(1, 1, 1, 1));
+        memory.getShowList().add(new Show(2, 1, 1, 1));
+    }
 
     @AfterEach
     void tearDown() {
@@ -25,36 +32,29 @@ public class SetupCommandTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"Setup 1 1 1 1", "Setup 2 26 1 1", "Setup 2 26 1 1", "Setup 3 1 10 1", "Setup 4 26 10 1"})
+    @ValueSource(strings = {"View 1", "View 2"})
     void validate_returnsTrue_validInput(String input) {
         String[] inputArray = input.split(" ");
         assertTrue(uut.validate(inputArray));
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"Setup 1 1 1 1 1", "Setup 1 0 1 1", "Setup 1 1 0 1", "Setup 1 27 1 1", "Setup 1 1 11 1", "Setup 1 a 1 1",
-            "Setu 1 1 1 1", "Setup1 1 1 1 1", "Setup 1 1 1", "Setup 1 1", "Setup 1", "Setup"})
+    @ValueSource(strings = {"View 1 1", "View", "Vie 1", "View a", "View 3"})
     void validate_returnsFalse_invalidInput(String input) {
         String[] inputArray = input.split(" ");
         assertFalse(uut.validate(inputArray));
     }
 
-    @Test
-    void validate_returnsFalse_existingShowNumber() {
-        uut.run(new String[]{"Setup", "1", "1", "1", "1"});
-        assertFalse(uut.validate(new String[]{"Setup", "1", "1", "1", "1"}));
-    }
-
     @ParameterizedTest
-    @ValueSource(strings = {"Setup 1 1 1 1", "Setup 2 26 1 1", "Setup 3 26 1 1", "Setup 4 1 10 1", "Setup 5 26 10 1"})
-    void run_createShow(String input) {
+    @ValueSource(strings = {"View 1", "View 2"})
+    void run_viewShow(String input) {
         String[] inputArray = input.split(" ");
         uut.run(inputArray);
         assertEquals(1, memory.getShowList().size());
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"Setup 1 1 1 a", "Setup 2 27 1 1"})
+    @ValueSource(strings = {"View 3", "View 4", "View 1 1"})
     void run_throwException_invalidInput(String input) {
         String[] inputArray = input.split(" ");
         assertThrows(RuntimeException.class, () -> uut.run(inputArray));

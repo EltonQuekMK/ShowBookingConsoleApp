@@ -7,6 +7,7 @@ public class ViewCommand implements Command {
 
     @Override
     public boolean validate(String[] inputs) {
+//        View <Show Number>
         System.out.println("validation~");
         return false;
     }
