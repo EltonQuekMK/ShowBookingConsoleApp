@@ -20,7 +20,7 @@ class ShowBookingApplicationTests {
     @Test
     void contextLoads() {
         Assertions.assertNotNull(commandList);
-        Assertions.assertEquals(2, commandList.size());
+        Assertions.assertEquals(5, commandList.size());
         Assertions.assertNotNull(memory);
         Assertions.assertEquals(0, memory.getShowList().size());
     }

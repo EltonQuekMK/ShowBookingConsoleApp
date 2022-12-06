@@ -1,8 +1,6 @@
 package com.eltonquek.showbooking.commands;
 
 import com.eltonquek.showbooking.SystemMemory;
-import com.eltonquek.showbooking.entities.Booking;
-import com.eltonquek.showbooking.entities.Seat;
 import com.eltonquek.showbooking.entities.Show;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,16 +12,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(args = "test")
-public class ViewCommandTest {
+public class AvailabilityCommandTest {
 
     @Autowired
-    private ViewCommand uut;
+    private AvailabilityCommand uut;
 
     @Autowired
     private SystemMemory memory;
@@ -33,21 +29,19 @@ public class ViewCommandTest {
 
     @BeforeEach
     void setup() {
-        Show show1 = new Show(1, 1, 1, 1);
-        List<Seat> seatList = new ArrayList<>();
-        seatList.add(new Seat("A1"));
-        memory.getBookingList().add(new Booking(1, 1234, "1234", seatList));
+        Show show1 = new Show(1, 2, 2, 1);
         memory.getShowList().add(show1);
 
-        memory.getShowList().add(new Show(2, 1, 1, 1));
+        Show show2 = new Show(2, 2, 2, 1);
+        show2.getSeatList().get(0).setBooked(true);
+        show2.getSeatList().get(1).setBooked(true);
+        memory.getShowList().add(show2);
 
-        Show show6 = new Show(6, 1, 1, 1);
-        List<Seat> seatList6 = new ArrayList<>();
-        seatList6.add(new Seat("A2"));
-        seatList6.add(new Seat("B4"));
-        seatList6.add(new Seat("C4"));
-        seatList6.add(new Seat("D5"));
-        memory.getBookingList().add(new Booking(6, 1235, "1234", seatList6));
+        Show show6 = new Show(6, 2, 2, 1);
+        show6.getSeatList().get(0).setBooked(true);
+        show6.getSeatList().get(1).setBooked(true);
+        show6.getSeatList().get(2).setBooked(true);
+        show6.getSeatList().get(3).setBooked(true);
         memory.getShowList().add(show6);
 
         System.setOut(new PrintStream(outContent));
@@ -62,36 +56,36 @@ public class ViewCommandTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"View 1", "View 2"})
+    @ValueSource(strings = {"Availability 1", "Availability 2"})
     void validate_returnsTrue_validInput(String input) {
         String[] inputArray = input.split(" ");
         assertTrue(uut.validate(inputArray));
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"View 1 1", "View", "Vie 1", "View a", "View 3"})
+    @ValueSource(strings = {"Availability 1 1", "Availability", "Vie 1", "Availability a", "Availability 3"})
     void validate_returnsFalse_invalidInput(String input) {
         String[] inputArray = input.split(" ");
         assertFalse(uut.validate(inputArray));
     }
 
     @Test
-    void run_viewShow1() {
-        String[] inputArray = new String[]{"View", "1"};
+    void run_viewShow1Availability() {
+        String[] inputArray = new String[]{"Availability", "1"};
         uut.run(inputArray);
         assertEquals(show1test().trim(), outContent.toString().trim().replace("\r", ""));
     }
 
     @Test
-    void run_viewShow2() {
-        String[] inputArray = new String[]{"View", "2"};
+    void run_viewShow2Availability() {
+        String[] inputArray = new String[]{"Availability", "2"};
         uut.run(inputArray);
         assertEquals(show2test().trim(), outContent.toString().trim().replace("\r", ""));
     }
 
     @Test
-    void run_viewShow6() {
-        String[] inputArray = new String[]{"View", "6"};
+    void run_viewShow6Availability() {
+        String[] inputArray = new String[]{"Availability", "6"};
         uut.run(inputArray);
         assertEquals(show6test().trim(), outContent.toString().trim().replace("\r", ""));
     }
@@ -99,29 +93,21 @@ public class ViewCommandTest {
     private String show1test() {
         return """
                 Show number: 1.
-                ---------------------------------------------------------------------------------------------
-                     Ticket Number        Buyer Phone Number                        Seat Numbers
-                ---------------------------------------------------------------------------------------------
-                              1234                      1234                                  A1
-                ---------------------------------------------------------------------------------------------
+                Available seats: A1, A2, B1, B2
                 """;
     }
 
     private String show2test() {
         return """
                 Show number: 2.
-                No bookings have been found for this show.
+                Available seats: B1, B2
                 """;
     }
 
     private String show6test() {
         return """
                 Show number: 6.
-                ---------------------------------------------------------------------------------------------
-                     Ticket Number        Buyer Phone Number                        Seat Numbers
-                ---------------------------------------------------------------------------------------------
-                              1235                      1234                      A2, B4, C4, D5
-                ---------------------------------------------------------------------------------------------
+                No seats are available for this show.
                 """;
     }
 }

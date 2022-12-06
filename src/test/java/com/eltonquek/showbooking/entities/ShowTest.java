@@ -13,24 +13,31 @@ public class ShowTest {
     void generateSeatList_returnSeatList_validInput_1_1() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Show show = new Show(1, 1, 1, 1);
         assertEquals(1, show.getSeatList().size());
+        assertEquals("A1", show.getSeatList().get(0).getSeatNumber());
     }
 
     @Test
     void generateSeatList_returnSeatList_validInput_26_1() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Show show = new Show(1, 26, 1, 1);
         assertEquals(26, show.getSeatList().size());
+        assertEquals("A1", show.getSeatList().get(0).getSeatNumber());
+        assertEquals("Z1", show.getSeatList().get(25).getSeatNumber());
     }
 
     @Test
     void generateSeatList_returnSeatList_validInput_1_10() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Show show = new Show(1, 1, 10, 1);
         assertEquals(10, show.getSeatList().size());
+        assertEquals("A1", show.getSeatList().get(0).getSeatNumber());
+        assertEquals("A10", show.getSeatList().get(9).getSeatNumber());
     }
 
     @Test
     void generateSeatList_returnSeatList_validInput_26_10() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Show show = new Show(1, 26, 10, 1);
         assertEquals(260, show.getSeatList().size());
+        assertEquals("A1", show.getSeatList().get(0).getSeatNumber());
+        assertEquals("Z10", show.getSeatList().get(259).getSeatNumber());
     }
 
     @Test

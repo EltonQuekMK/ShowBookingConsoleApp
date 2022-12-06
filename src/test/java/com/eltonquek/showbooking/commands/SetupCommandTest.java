@@ -53,10 +53,4 @@ public class SetupCommandTest {
         assertEquals(1, memory.getShowList().size());
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"Setup 1 1 1 a", "Setup 2 27 1 1"})
-    void run_throwException_invalidInput(String input) {
-        String[] inputArray = input.split(" ");
-        assertThrows(RuntimeException.class, () -> uut.run(inputArray));
-    }
 }

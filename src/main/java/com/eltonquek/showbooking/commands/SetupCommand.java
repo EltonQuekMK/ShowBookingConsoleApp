@@ -15,7 +15,7 @@ public class SetupCommand implements Command {
 
     @Override
     public boolean validate(String[] inputs) {
-//        Setup <Show Number> <Number of Rows> <Number of seats per row> <Cancellation window in minutes>
+        // Setup <Show Number> <Number of Rows> <Number of seats per row> <Cancellation window in minutes>
         if (inputs.length != 5 || !Objects.equals(inputs[0], "Setup")) {
             return false;
         }
@@ -25,14 +25,26 @@ public class SetupCommand implements Command {
             int rows = Integer.parseInt(inputs[2]);
             int columns = Integer.parseInt(inputs[3]);
             int cancellationWindow = Integer.parseInt(inputs[4]);
-            if (rows > 26 || rows < 1
-                    || columns > 10 || columns < 1
-                    || cancellationWindow < 0
-                    || memory.getShowList().stream().map(Show::getShowNumber).anyMatch(currentShowNumber -> currentShowNumber == showNumber)
-            ) {
+
+            if (memory.getShowList().stream().map(Show::getShowNumber).anyMatch(currentShowNumber -> currentShowNumber == showNumber)) {
+                System.out.println("A show with show number: " + showNumber + " already exists.");
                 return false;
             }
+            if (rows > 26 || rows < 1) {
+                System.out.println("Number of Rows must be a number between 1 to 26.");
+                return false;
+            }
+            if (columns > 10 || columns < 1) {
+                System.out.println("Number of seats per row must be a number between 1 to 10.");
+                return false;
+            }
+            if (cancellationWindow < 0) {
+                System.out.println("Cancellation window in minutes cannot be a negative number.");
+                return false;
+            }
+
         } catch (NumberFormatException nfe) {
+            System.out.println("The digits in your command are invalid.");
             return false;
         }
 
@@ -41,11 +53,6 @@ public class SetupCommand implements Command {
 
     @Override
     public void run(String[] inputs) {
-        // Ensure that run cannot be used without valid inputs
-        if (!validate(inputs)) {
-            throw new RuntimeException("Invalid input");
-        }
-
         int showNumber = Integer.parseInt(inputs[1]);
         int rows = Integer.parseInt(inputs[2]);
         int columns = Integer.parseInt(inputs[3]);

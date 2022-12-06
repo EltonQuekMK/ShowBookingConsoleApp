@@ -11,12 +11,14 @@ import java.util.List;
 @Setter
 public class Booking {
 
-    private String ticketNumber;
+    private int showNumber;
+    private int ticketNumber;
     private String phoneNumber;
     private List<Seat> seatList;
     private LocalDateTime createdDateTime;
 
-    public Booking(String ticketNumber, String phoneNumber, List<Seat> seatList) {
+    public Booking(int showNumber, int ticketNumber, String phoneNumber, List<Seat> seatList) {
+        this.showNumber = showNumber;
         this.ticketNumber = ticketNumber;
         this.phoneNumber = phoneNumber;
         this.seatList = seatList;

@@ -20,15 +20,12 @@ public class Show {
 
     private List<Seat> seatList;
 
-    private List<Booking> bookingList;
-
     public Show(int showNumber, int rows, int columns, int cancellationValidityInMinutes) {
         this.showNumber = showNumber;
         this.rows = rows;
         this.columns = columns;
         this.cancellationValidityInMinutes = cancellationValidityInMinutes;
         this.seatList = generateSeatList(rows, columns);
-        this.bookingList = new ArrayList<>();
     }
 
     private List<Seat> generateSeatList(int rows, int columns) {
@@ -38,7 +35,7 @@ public class Show {
         List<Seat> seatList = new ArrayList<>();
         for (int i = 1; i <= rows; i++) {
             for (int j = 1; j <= columns; j++) {
-                String seatNumber = String.valueOf('A' - 1 + i) + columns;
+                String seatNumber = Character.toString('A' - 1 + i) + j;
                 seatList.add(new Seat(seatNumber));
             }
         }
