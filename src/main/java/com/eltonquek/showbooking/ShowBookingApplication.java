@@ -31,7 +31,7 @@ public class ShowBookingApplication implements CommandLineRunner {
         Scanner scanner = new Scanner(System.in);
         introduction();
 
-        // Run commands
+        // Read user input
         try {
             while (true) {
                 System.out.print("enter command: ");
@@ -70,8 +70,3 @@ public class ShowBookingApplication implements CommandLineRunner {
         }
     }
 }
-
-// SystemMemory: showList
-// Show: showNumber, rows, columns, cancellationValidityInMinutes, seatList, bookingList
-// Seat: isBooked, seatNumber
-// Booking: ticketNumber, phoneNumber, seatList, createdDateTime

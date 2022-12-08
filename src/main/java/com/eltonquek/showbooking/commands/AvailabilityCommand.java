@@ -7,31 +7,41 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.eltonquek.showbooking.utils.CommandUtils.getShowFromMemory;
+import static com.eltonquek.showbooking.utils.CommandUtils.showNumberDoesNotExist;
+import static com.eltonquek.showbooking.utils.Constants.*;
+
 @Component
-public class AvailabilityCommand implements Command {
+public class AvailabilityCommand extends Command {
 
     @Autowired
     private SystemMemory memory;
 
     @Override
-    public boolean validate(String[] inputs) {
-        // Availability  <Show Number>
-        if (inputs.length != 2 || !Objects.equals(inputs[0], "Availability")) {
-            return false;
-        }
+    String key() {
+        return "Availability";
+    }
 
+    @Override
+    int numberOfInputs() {
+        return 2;
+    }
+
+    @Override
+    public boolean commandValidation(String[] inputs) {
+        // Availability  <Show Number>
         try {
             int showNumber = Integer.parseInt(inputs[1]);
-            if (memory.getShowList().stream().map(Show::getShowNumber).noneMatch(currentShowNumber -> currentShowNumber == showNumber)) {
-                System.out.println("The show with show number: " + showNumber + " does not exist.");
+
+            // Check that show exists
+            if (showNumberDoesNotExist(memory, showNumber)) {
+                System.out.format(SHOW_NUMBER_DOES_NOT_EXIST_FORMAT, showNumber);
                 return false;
             }
         } catch (NumberFormatException nfe) {
-            System.out.println("The digits in your command are invalid.");
+            System.out.println(DIGITS_INVALID_MESSAGE);
             return false;
         }
 
@@ -43,21 +53,18 @@ public class AvailabilityCommand implements Command {
         // (To list all available seat numbers for a show. E,g A1, F4 etc)
 
         int showNumber = Integer.parseInt(inputs[1]);
-        Optional<Show> showOptional = memory.getShowList().stream().filter(currentShow -> currentShow.getShowNumber() == showNumber).findFirst();
-        if (showOptional.isPresent()) {
-            Show show = showOptional.get();
-            System.out.printf("Show number: %d.\n", showNumber);
 
-            List<Seat> availableSeatList = show.getSeatList().stream().filter(seat -> !seat.isBooked()).toList();
+        Show show = getShowFromMemory(memory, showNumber);
+        System.out.format(SHOW_NUMBER_FORMAT, showNumber);
 
-            if (availableSeatList.size() == 0) {
-                System.out.println("No seats are available for this show.");
-            } else {
-                String seatList = availableSeatList.stream().map(Seat::getSeatNumber).collect(Collectors.joining(", "));
-                System.out.println("Available seats: " + seatList);
-            }
+        List<Seat> availableSeatList = show.getSeatList().stream().filter(seat -> !seat.isBooked()).toList();
+
+        if (availableSeatList.size() == 0) {
+            System.out.println("No seats are available for this show.");
         } else {
-            throw new RuntimeException("Show not found.");
+            String seatList = availableSeatList.stream().map(Seat::getSeatNumber).collect(Collectors.joining(", "));
+            System.out.println("Available seats: " + seatList);
         }
+
     }
 }

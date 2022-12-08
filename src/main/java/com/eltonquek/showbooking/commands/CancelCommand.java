@@ -7,47 +7,52 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.Optional;
 
+import static com.eltonquek.showbooking.utils.CommandUtils.*;
+import static com.eltonquek.showbooking.utils.Constants.DIGITS_INVALID_MESSAGE;
+
 @Component
-public class CancelCommand implements Command {
+public class CancelCommand extends Command {
+
+    @Override
+    String key() {
+        return "Cancel";
+    }
+
+    @Override
+    int numberOfInputs() {
+        return 3;
+    }
 
     @Autowired
     private SystemMemory memory;
 
     @Override
-    public boolean validate(String[] inputs) {
+    public boolean commandValidation(String[] inputs) {
         // Cancel  <Ticket#>  <Phone#>
-        if (inputs.length != 3 || !Objects.equals(inputs[0], "Cancel")) {
-            return false;
-        }
-
         try {
             int ticketNumber = Integer.parseInt(inputs[1]);
             String phoneNumber = inputs[2];
-            Optional<Booking> bookingOptional = memory.getBookingList().stream().filter(currentBooking ->
-                    currentBooking.getTicketNumber() == ticketNumber && Objects.equals(currentBooking.getPhoneNumber(), phoneNumber)).findFirst();
-            if (bookingOptional.isEmpty()) {
-                System.out.println("The booking with ticket number: " + ticketNumber + " and phone number: " + phoneNumber + " does not exist.");
-                return false;
-            } else {
-                Booking booking = bookingOptional.get();
-                Optional<Show> showOptional = memory.getShowList().stream().filter(show -> show.getShowNumber() == booking.getShowNumber()).findFirst();
-                if (showOptional.isPresent()) {
-                    int cancellationWindow = showOptional.get().getCancellationValidityInMinutes();
-                    if (booking.getCreatedDateTime().isBefore(LocalDateTime.now().minusMinutes(cancellationWindow))) {
-                        System.out.println("The booking with ticket number: " + ticketNumber + " has exceeded the time window of " + cancellationWindow + "minutes.");
-                        return false;
-                    }
-                } else {
-                    throw new RuntimeException("Show not found.");
-                }
 
+            // Check that booking exists
+            Optional<Booking> bookingOptional = getBookingOptionalFromMemory(memory, ticketNumber, phoneNumber);
+            if (bookingOptional.isEmpty()) {
+                System.out.format("The booking with ticket number: %d and phone number: %s does not exist.%n", ticketNumber, phoneNumber);
+                return false;
+            }
+
+            // Check if booking in within cancellation window
+            Booking booking = bookingOptional.get();
+            Show show = getShowFromMemory(memory, booking.getShowNumber());
+            int cancellationWindow = show.getCancellationValidityInMinutes();
+            if (booking.getCreatedDateTime().isBefore(LocalDateTime.now().minusMinutes(cancellationWindow))) {
+                System.out.format("The booking with ticket number: %d has exceeded the time window of %d minute(s).%n", ticketNumber, cancellationWindow);
+                return false;
             }
 
         } catch (NumberFormatException nfe) {
-            System.out.println("The digits in your command are invalid.");
+            System.out.println(DIGITS_INVALID_MESSAGE);
             return false;
         }
 
@@ -61,12 +66,15 @@ public class CancelCommand implements Command {
 
         int ticketNumber = Integer.parseInt(inputs[1]);
         String phoneNumber = inputs[2];
-        Optional<Booking> bookingOptional = memory.getBookingList().stream().filter(currentBooking ->
-                currentBooking.getTicketNumber() == ticketNumber && Objects.equals(currentBooking.getPhoneNumber(), phoneNumber)).findFirst();
-        if (bookingOptional.isPresent()) {
-            Booking booking = bookingOptional.get();
-            memory.getBookingList().remove(booking);
-            booking.getSeatList().stream().forEach(seat -> seat.setBooked(false));
-        }
+
+        // Remove booking
+        Booking booking = getBookingFromMemory(memory, ticketNumber, phoneNumber);
+        memory.getBookingList().remove(booking);
+
+        // Reset seats to unbooked
+        booking.getSeatList().stream().forEach(seat -> seat.setBooked(false));
+
+        //Print Message
+        System.out.println("Cancellation successful!");
     }
 }
