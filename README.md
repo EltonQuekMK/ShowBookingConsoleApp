@@ -1,5 +1,10 @@
 Elton Quek's Show Booking Console Application
 
+Tech Stack:
+- JDK 17
+- SpringBoot 3.0.0
+- Lombok 1.18.24
+- Maven
 
 Assumptions:
 - No check of user type is required.
